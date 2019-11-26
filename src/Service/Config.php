@@ -147,7 +147,18 @@ class Config
     public function getEnabledPhpExtensions(): array
     {
         try {
-            return $this->reader->read()['runtime']['extensions'];
+            if (array_key_exists('runtime', $this->reader->read())) {
+                return $this->reader->read()['runtime']['extensions'];
+            } else {
+                return [
+                    'redis',
+                    'xsl',
+                    'json',
+                    'blackfire',
+                    'newrelic',
+                    'sodium'
+                ];
+            }
         } catch (FilesystemException $exception) {
             throw new ConfigurationMismatchException($exception->getMessage(), $exception->getCode(), $exception);
         }
@@ -160,7 +171,11 @@ class Config
     public function getDisabledPhpExtensions(): array
     {
         try {
-            return $this->reader->read()['runtime']['disabled_extensions'];
+            if (array_key_exists('runtime', $this->reader->read())) {
+                return $this->reader->read()['runtime']['disabled_extensions'];
+            } else {
+                return [];
+            }
         } catch (FilesystemException $exception) {
             throw new ConfigurationMismatchException($exception->getMessage(), $exception->getCode(), $exception);
         }
