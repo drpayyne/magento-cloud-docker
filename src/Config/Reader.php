@@ -42,58 +42,63 @@ class Reader implements ReaderInterface
      */
     public function read(): array
     {
-        try {
-            $appConfig = Yaml::parse(
-                $this->filesystem->get($this->fileList->getAppConfig())
-            );
-            $servicesConfig = Yaml::parse(
-                $this->filesystem->get($this->fileList->getServicesConfig())
-            );
-        } catch (\Exception $exception) {
-            throw new FilesystemException($exception->getMessage(), $exception->getCode(), $exception);
-        }
-
-        if (!isset($appConfig['type'])) {
-            throw new FilesystemException('PHP version could not be parsed.');
-        }
-
-        if (!isset($appConfig['relationships'])) {
-            throw new FilesystemException('Relationships could not be parsed.');
-        }
-
-        $config = [
-            'type' => $appConfig['type'],
-            'crons' => $appConfig['crons'] ?? [],
-            'services' => [],
-            'runtime' => [
-                'extensions' => $appConfig['runtime']['extensions'] ?? [],
-                'disabled_extensions' => $appConfig['runtime']['disabled_extensions'] ?? []
-            ]
-        ];
-
-        foreach ($appConfig['relationships'] as $constraint) {
-            list($name) = explode(':', $constraint);
-
-            if (!isset($servicesConfig[$name]['type'])) {
-                throw new FilesystemException(sprintf(
-                    'Service with name "%s" could not be parsed',
-                    $name
-                ));
+        $config = [];
+        if ($this->filesystem->exists($this->fileList->getAppConfig())
+            && $this->filesystem->exists($this->fileList->getServicesConfig())
+        ) {
+            try {
+                $appConfig = Yaml::parse(
+                    $this->filesystem->get($this->fileList->getAppConfig())
+                );
+                $servicesConfig = Yaml::parse(
+                    $this->filesystem->get($this->fileList->getServicesConfig())
+                );
+            } catch (\Exception $exception) {
+                throw new FilesystemException($exception->getMessage(), $exception->getCode(), $exception);
             }
 
-            list($service, $version) = explode(':', $servicesConfig[$name]['type']);
-
-            if (array_key_exists($service, $config['services'])) {
-                throw new FilesystemException(sprintf(
-                    'Only one instance of service "%s" supported',
-                    $service
-                ));
+            if (!isset($appConfig['type'])) {
+                throw new FilesystemException('PHP version could not be parsed.');
             }
 
-            $config['services'][$service] = [
-                'service' => $service,
-                'version' => $version
+            if (!isset($appConfig['relationships'])) {
+                throw new FilesystemException('Relationships could not be parsed.');
+            }
+
+            $config = [
+                'type' => $appConfig['type'],
+                'crons' => $appConfig['crons'] ?? [],
+                'services' => [],
+                'runtime' => [
+                    'extensions' => $appConfig['runtime']['extensions'] ?? [],
+                    'disabled_extensions' => $appConfig['runtime']['disabled_extensions'] ?? []
+                ]
             ];
+
+            foreach ($appConfig['relationships'] as $constraint) {
+                list($name) = explode(':', $constraint);
+
+                if (!isset($servicesConfig[$name]['type'])) {
+                    throw new FilesystemException(sprintf(
+                        'Service with name "%s" could not be parsed',
+                        $name
+                    ));
+                }
+
+                list($service, $version) = explode(':', $servicesConfig[$name]['type']);
+
+                if (array_key_exists($service, $config['services'])) {
+                    throw new FilesystemException(sprintf(
+                        'Only one instance of service "%s" supported',
+                        $service
+                    ));
+                }
+
+                $config['services'][$service] = [
+                    'service' => $service,
+                    'version' => $version
+                ];
+            }
         }
 
         return $config;
