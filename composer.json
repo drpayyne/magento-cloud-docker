@@ -74,6 +74,18 @@
             [
                 "dist/bin/magento-docker",
                 "bin/magento-docker"
+            ],
+            [
+                "dist/.magento.app.yaml",
+                ".magento.app.yaml"
+            ],
+            [
+                "dist/routes.yaml",
+                ".magento/routes.yaml"
+            ],
+            [
+                "dist/services.yaml",
+                ".magento/services.yaml"
             ]
         ],
         "chmod": [
