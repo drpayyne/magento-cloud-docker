@@ -1,0 +1,22 @@
+version: '2'
+services:
+  # Blackfire Agent as Docker service
+  blackfire:
+    image: blackfire/blackfire
+    ports: ["8707"]
+    hostname: blackfire
+    networks:
+      - magento
+    environment:
+      BLACKFIRE_LOG_LEVEL: 4
+      BLACKFIRE_SERVER_ID: <INSERT BLACKFIRE_SERVER_ID HERE>
+      BLACKFIRE_SERVER_TOKEN: <INSERT BLACKFIRE_SERVER_TOKEN HERE>
+      BLACKFIRE_CLIENT_ID: <INSERT BLACKFIRE_CLIENT_ID HERE>
+      BLACKFIRE_CLIENT_TOKEN: <INSERT BLACKFIRE_CLIENT_TOKEN HERE>
+  # Use local Blackfire-injected custom PHP images
+  fpm:
+    build:
+      context: ./vendor/magento/magento-cloud-docker/images/php/7.3-fpm/
+  build:
+    build:
+      context: ./vendor/magento/magento-cloud-docker/images/php/7.3-cli/
