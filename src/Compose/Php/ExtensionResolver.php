@@ -104,6 +104,7 @@ class ExtensionResolver
      * Returns list of PHP extensions which will be enabled in Docker PHP container.
      *
      * @param Config $config
+     *
      * @return array
      * @throws ConfigurationMismatchException
      */
@@ -410,5 +411,20 @@ BASH
                 ],
             ],
         ];
+    }
+
+    public function getBlackFireConfig(Config $config): array
+    {
+        $blackFireConfig = [];
+
+        foreach ($config->getEnabledPhpExtensions() as $phpExtension) {
+            if (is_array($phpExtension)) {
+                if ($phpExtension["name"] == "blackfire") {
+                    $blackFireConfig = $phpExtension["configuration"];
+                }
+            }
+        }
+
+        return $blackFireConfig;
     }
 }

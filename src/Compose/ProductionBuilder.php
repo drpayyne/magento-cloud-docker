@@ -338,6 +338,27 @@ class ProductionBuilder implements BuilderInterface
             );
         }
 
+        $blackFireConfig = $this->phpExtension->getBlackFireConfig($config);
+        $manager->addService(
+            ServiceInterface::SERVICE_BLACKFIRE,
+            $this->serviceFactory->create(
+                ServiceInterface::SERVICE_BLACKFIRE,
+                $config->getServiceVersion(ServiceInterface::SERVICE_BLACKFIRE),
+                [
+                    'environment' => [
+                        'BLACKFIRE_SERVER_ID' => $blackFireConfig["server_id"],
+                        'BLACKFIRE_SERVER_TOKEN' => $blackFireConfig["server_token"],
+                        'BLACKFIRE_CLIENT_ID' => $blackFireConfig["client_id"],
+                        'BLACKFIRE_CLIENT_TOKEN' => $blackFireConfig["client_token"],
+                        'BLACKFIRE_LOG_LEVEL' => 4
+                    ],
+                    'ports' => ["8707"]
+                ]
+            ),
+            [self::NETWORK_MAGENTO],
+            []
+        );
+
         $phpExtensions = $this->phpExtension->get($config);
 
         /**
