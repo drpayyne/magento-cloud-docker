@@ -346,11 +346,11 @@ class ProductionBuilder implements BuilderInterface
                 $config->getServiceVersion(ServiceInterface::SERVICE_BLACKFIRE),
                 [
                     'environment' => [
-                        'BLACKFIRE_SERVER_ID' => $blackFireConfig["server_id"],
-                        'BLACKFIRE_SERVER_TOKEN' => $blackFireConfig["server_token"],
-                        'BLACKFIRE_CLIENT_ID' => $blackFireConfig["client_id"],
-                        'BLACKFIRE_CLIENT_TOKEN' => $blackFireConfig["client_token"],
-                        'BLACKFIRE_LOG_LEVEL' => 4
+                        'BLACKFIRE_SERVER_ID' => '~',
+                        'BLACKFIRE_SERVER_TOKEN' => '~',
+                        'BLACKFIRE_CLIENT_ID' => '~',
+                        'BLACKFIRE_CLIENT_TOKEN' => '~',
+                        'BLACKFIRE_LOG_LEVEL' => '~'
                     ],
                     'ports' => ["8707"]
                 ]
